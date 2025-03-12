@@ -160,7 +160,7 @@ class ShapefileIndexerBoundsHelper {
 
         @Override
         public void read(int recNumber, Envelope env) throws IOException {
-            int offset = shpIndex.getOffsetInBytes(recNumber);
+            long offset = shpIndex.getOffsetInBytes(recNumber);
             reader.goTo(offset);
             Record rec = reader.nextRecord();
             env.init(rec.minX, rec.maxX, rec.minY, rec.maxY);
@@ -168,7 +168,7 @@ class ShapefileIndexerBoundsHelper {
 
         @Override
         public void expandEnvelope(int recNumber, Envelope env) throws IOException {
-            int offset = shpIndex.getOffsetInBytes(recNumber);
+            long offset = shpIndex.getOffsetInBytes(recNumber);
             reader.goTo(offset);
             Record rec = reader.nextRecord();
             env.expandToInclude(rec.minX, rec.minY);

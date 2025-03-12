@@ -75,11 +75,11 @@ public class ShapefileReader implements FileReader, Closeable {
      * The reader returns only one Record instance in its lifetime. The record contains the current record information.
      */
     public final class Record {
-        int length;
+        long length;
 
         public int number = 0;
 
-        int offset; // Relative to the whole file
+        long offset; // Relative to the whole file
 
         int start = 0; // Relative to the current loaded buffer
 
@@ -97,7 +97,7 @@ public class ShapefileReader implements FileReader, Closeable {
 
         public ShapeType type;
 
-        int end = 0; // Relative to the whole file
+        long end = 0; // Relative to the whole file
 
         Object shape = null;
 
@@ -115,7 +115,7 @@ public class ShapefileReader implements FileReader, Closeable {
             return shape;
         }
 
-        public int offset() {
+        public long offset() {
             return offset;
         }
 
@@ -449,7 +449,7 @@ public class ShapefileReader implements FileReader, Closeable {
         return hasNext;
     }
 
-    private int getNextOffset() throws IOException {
+    private long getNextOffset() throws IOException {
         if (currentShape >= 0) {
             return shxReader.getOffsetInBytes(currentShape);
         } else {
@@ -506,9 +506,9 @@ public class ShapefileReader implements FileReader, Closeable {
     }
 
     @SuppressWarnings("PMD.CloseResource") // file channel managed as a field
-    private void positionBufferForOffset(ByteBuffer buffer, int offset) throws IOException {
+    private void positionBufferForOffset(ByteBuffer buffer, long offset) throws IOException {
         if (useMemoryMappedBuffer) {
-            ((Buffer) buffer).position(offset);
+            ((Buffer) buffer).position((int) offset);
             return;
         }
 
@@ -626,12 +626,12 @@ public class ShapefileReader implements FileReader, Closeable {
      *       which shape we are)
      * </ul>
      */
-    public void goTo(int offset) throws IOException, UnsupportedOperationException {
+    public void goTo(long offset) throws IOException, UnsupportedOperationException {
         disableShxUsage();
         if (randomAccessEnabled) {
             positionBufferForOffset(buffer, offset);
 
-            int oldRecordOffset = record.end;
+            long oldRecordOffset = record.end;
             record.end = offset;
             try {
                 hasNext(false); // don't check for next logical record equality
@@ -653,7 +653,7 @@ public class ShapefileReader implements FileReader, Closeable {
      *       which shape we are)
      * </ul>
      */
-    public Object shapeAt(int offset) throws IOException, UnsupportedOperationException {
+    public Object shapeAt(long offset) throws IOException, UnsupportedOperationException {
         disableShxUsage();
         if (randomAccessEnabled) {
             this.goTo(offset);
@@ -677,7 +677,7 @@ public class ShapefileReader implements FileReader, Closeable {
      * @throws IOException thrown in a read error occurs
      * @throws UnsupportedOperationException thrown if not a random access file
      */
-    public Record recordAt(int offset) throws IOException, UnsupportedOperationException {
+    public Record recordAt(long offset) throws IOException, UnsupportedOperationException {
         if (randomAccessEnabled) {
             this.goTo(offset);
             return nextRecord();
@@ -691,7 +691,7 @@ public class ShapefileReader implements FileReader, Closeable {
      * @param offset The offset relative to the whole file
      * @return The offset relative to the current loaded portion of the file
      */
-    private int toBufferOffset(int offset) {
+    private int toBufferOffset(long offset) {
         return (int) (offset - this.currentOffset);
     }
 
@@ -701,8 +701,8 @@ public class ShapefileReader implements FileReader, Closeable {
      * @param offset The offset relative to the buffer
      * @return The offset relative to the whole file
      */
-    private int toFileOffset(int offset) {
-        return (int) (this.currentOffset + offset);
+    private long toFileOffset(long offset) {
+        return (this.currentOffset + offset);
     }
 
     /**

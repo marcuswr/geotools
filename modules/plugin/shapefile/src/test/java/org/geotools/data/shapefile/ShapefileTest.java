@@ -209,12 +209,12 @@ public class ShapefileTest extends TestCaseSupport {
     public void testShapefileReaderRecord() throws Exception {
         final URL c1 = TestData.url(STATEPOP);
         URL c2;
-        ArrayList<Integer> offsets = new ArrayList<>();
+        ArrayList<Long> offsets = new ArrayList<>();
         try (ShapefileReader reader = new ShapefileReader(new ShpFiles(c1), false, false, new GeometryFactory())) {
 
             while (reader.hasNext()) {
                 ShapefileReader.Record record = reader.nextRecord();
-                offsets.add(Integer.valueOf(record.offset()));
+                offsets.add(Long.valueOf(record.offset()));
                 Geometry geom = (Geometry) record.shape();
                 assertEquals(
                         new Envelope(record.minX, record.maxX, record.minY, record.maxY), geom.getEnvelopeInternal());
@@ -225,8 +225,8 @@ public class ShapefileTest extends TestCaseSupport {
         }
 
         try (ShapefileReader reader = new ShapefileReader(new ShpFiles(c2), false, false, new GeometryFactory())) {
-            for (Integer offset : offsets) {
-                reader.shapeAt(offset.intValue());
+            for (Long offset : offsets) {
+                reader.shapeAt(offset.longValue());
             }
         }
     }

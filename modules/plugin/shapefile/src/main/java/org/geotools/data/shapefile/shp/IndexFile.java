@@ -47,7 +47,7 @@ public class IndexFile implements FileReader, AutoCloseable {
 
     private boolean useMemoryMappedBuffer;
     private FileChannel channel;
-    private int channelOffset;
+    private long channelOffset;
     private ByteBuffer buf = null;
     private int lastIndex = -1;
     private int recOffset;
@@ -151,7 +151,7 @@ public class IndexFile implements FileReader, AutoCloseable {
 
     private void readRecord(int index) throws IOException {
         check();
-        int pos = 100 + index * 8;
+        long pos = 100 + index * 8;
         if (!this.useMemoryMappedBuffer) {
             if (pos - this.channelOffset < 0 || this.channelOffset + buf.limit() <= pos || this.lastIndex == -1) {
                 LOGGER.finest("Filling buffer...");
@@ -163,7 +163,7 @@ public class IndexFile implements FileReader, AutoCloseable {
             }
         }
 
-        ((Buffer) buf).position(pos - this.channelOffset);
+        ((Buffer) buf).position((int) (pos - this.channelOffset));
         this.recOffset = buf.getInt();
         this.recLen = buf.getInt();
         this.lastIndex = index;
@@ -206,8 +206,8 @@ public class IndexFile implements FileReader, AutoCloseable {
      * @param index The index, from 0 to getRecordCount - 1
      * @return The offset in 16-bit words.
      */
-    public int getOffset(int index) throws IOException {
-        int ret = -1;
+    public long getOffset(int index) throws IOException {
+        long ret = -1;
 
         if (this.channel != null) {
             if (this.lastIndex != index) {
@@ -228,7 +228,7 @@ public class IndexFile implements FileReader, AutoCloseable {
      * @param index The index, from 0 to getRecordCount - 1
      * @return The offset in bytes.
      */
-    public int getOffsetInBytes(int index) throws IOException {
+    public long getOffsetInBytes(int index) throws IOException {
         return this.getOffset(index) * 2;
     }
 

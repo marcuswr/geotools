@@ -155,10 +155,10 @@ public class CachedQuadTree {
         int curr;
 
         /** The ordinates holder */
-        int[] indices;
+        long[] indices;
 
         public Indices() {
-            indices = new int[100];
+            indices = new long[100];
             curr = -1;
         }
 
@@ -168,14 +168,14 @@ public class CachedQuadTree {
         }
 
         /** Adds a coordinate to this list */
-        void add(int index) {
+        void add(long index) {
             curr++;
             if ((curr * 2 + 1) >= indices.length) {
                 int newSize = indices.length * 3 / 2;
                 if (newSize < 10) {
                     newSize = 10;
                 }
-                int[] resized = new int[newSize];
+                long[] resized = new long[newSize];
                 System.arraycopy(indices, 0, resized, 0, indices.length);
                 indices = resized;
             }
@@ -187,7 +187,7 @@ public class CachedQuadTree {
             curr = -1;
         }
 
-        int get(int position) {
+        long get(int position) {
             return indices[position];
         }
 
